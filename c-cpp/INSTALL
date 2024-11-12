@@ -23,6 +23,11 @@ INSTALL
    * sequential-rbtree
    * sequential-skiplist
 
+   To compile the shared libraries for the lock-free data structures,
+   type:
+
+   make lib
+
 LANGUAGE STANDARD REVISIONS
 ------------------------
    Most data structures compile with GNU89 however some require GNU11 features 

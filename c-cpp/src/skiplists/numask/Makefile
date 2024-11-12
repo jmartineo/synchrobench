@@ -2,6 +2,8 @@ ROOT = ../../..
 
 include $(ROOT)/common/Makefile.common
 
+SHARED_LIB = $(BUILDIR)/libnumask-skiplist.so
+
 BINS = $(BINDIR)/lockfree-numask-skiplist
 CXX = g++
 
@@ -36,5 +38,16 @@ test.o: intset.h skiplist.h search.h nohotspot_ops.h background.h allocator.h
 main: intset.o skiplist.o search.o nohotspot_ops.o test.o background.o allocator.o queue.o
 	$(CXX) $(CFLAGS) $(BUILDIR)/background.o $(BUILDIR)/queue.o $(BUILDIR)/skiplist.o $(BUILDIR)/intset.o $(BUILDIR)/nohotspot_ops.o $(BUILDIR)/search.o $(BUILDIR)/allocator.o $(BUILDIR)/test.o -o $(BINS) -std=c++11 $(LDFLAGS) -I. -lnuma
 	
+lib:
+	$(CXX) $(CFLAGS) -fPIC -c -o $(BUILDIR)/nohotspot_ops.o nohotspot_ops.cpp -std=c++11 -I.
+	$(CXX) $(CFLAGS) -fPIC -c -o $(BUILDIR)/skiplist.o skiplist.cpp -std=c++11 -I.
+	$(CXX) $(CFLAGS) -fPIC -c -o $(BUILDIR)/queue.o queue.cpp -std=c++11 -I.
+	$(CXX) $(CFLAGS) -fPIC -c -o $(BUILDIR)/background.o background.cpp -std=c++11 -I.
+	$(CXX) $(CFLAGS) -fPIC -c -o $(BUILDIR)/intset.o intset.cpp -std=c++11 -I.
+	$(CXX) $(CFLAGS) -fPIC -c -o $(BUILDIR)/search.o search.cpp -std=c++11 -I.
+	$(CXX) $(CFLAGS) -fPIC -c -o $(BUILDIR)/allocator.o allocator.cpp -std=c++11 -I -lnuma.
+	$(CXX) $(CFLAGS) -fPIC -c -o $(BUILDIR)/test.o test.cpp -std=c++11 -I.
+	$(CXX) -shared -o $(SHARED_LIB) $(BUILDIR)/nohotspot_ops.o $(BUILDIR)/skiplist.o $(BUILDIR)/queue.o $(BUILDIR)/background.o $(BUILDIR)/intset.o $(BUILDIR)/search.o $(BUILDIR)/allocator.o $(BUILDIR)/test.o -std=c++11 -I. -lnuma
+
 clean:
 	-rm -f $(BINS)

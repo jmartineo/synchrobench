@@ -4,6 +4,8 @@ include $(ROOT)/common/Makefile.common
 
 BINS = $(BINDIR)/lockfree-rotating-skiplist
 
+SHARED_LIB = $(BUILDIR)/librotating-skiplist.so
+
 .PHONY:	all clean
 
 all:	main
@@ -31,6 +33,16 @@ test.o: intset.h
 
 main: intset.o $(BUILDIR)/background.o $(BUILDIR)/skiplist.o $(BUILDIR)/nohotspot_ops.o test.o $(BUILDIR)/ptst.o $(BUILDIR)/garbagecoll.o
 	$(CC) $(CFLAGS) $(BUILDIR)/garbagecoll.o $(BUILDIR)/ptst.o $(BUILDIR)/skiplist.o $(BUILDIR)/nohotspot_ops.o $(BUILDIR)/intset.o $(BUILDIR)/background.o $(BUILDIR)/test.o -o $(BINS) $(LDFLAGS)
+
+lib:
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/ptst.o ptst.c
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/garbagecoll.o garbagecoll.c
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/nohotspot_ops.o nohotspot_ops.c
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/skiplist.o skiplist.c
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/background.o background.c
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/intset.o intset.c
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/test.o test.c
+	$(CC) -shared -o $(SHARED_LIB) $(BUILDIR)/ptst.o $(BUILDIR)/garbagecoll.o $(BUILDIR)/nohotspot_ops.o $(BUILDIR)/skiplist.o $(BUILDIR)/background.o $(BUILDIR)/intset.o $(BUILDIR)/test.o
 
 clean:
 	-rm -rf ${BUILDIR}

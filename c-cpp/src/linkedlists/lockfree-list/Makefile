@@ -2,6 +2,8 @@ ROOT = ../../..
 
 include $(ROOT)/common/Makefile.common
 
+SHARED_LIB = $(BUILDIR)/liblinkedlist-harris.so
+
 ifeq ($(STM),SEQUENTIAL)
   BINS = $(BINDIR)/sequential-linkedlist
 else ifeq ($(STM),LOCKFREE)
@@ -29,6 +31,13 @@ test.o: linkedlist.h harris.h intset.h
 
 main: linkedlist.o harris.o intset.o test.o $(TMILB)
 	$(CC) $(CFLAGS) $(BUILDIR)/linkedlist.o $(BUILDIR)/harris.o $(BUILDIR)/intset.o $(BUILDIR)/test.o -o $(BINS) $(LDFLAGS)
+
+lib: 
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/linkedlist.o linkedlist.c
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/harris.o harris.c
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/intset.o intset.c
+	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/test.o test.c
+	$(CC) -shared -o $(SHARED_LIB) $(BUILDIR)/linkedlist.o $(BUILDIR)/harris.o $(BUILDIR)/intset.o $(BUILDIR)/test.o
 
 clean:
 	-rm -f $(BINS)

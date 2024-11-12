@@ -12,6 +12,7 @@ ifeq "$(GCC_GTEQ_490)" "1"
 	LFBENCHS += src/linkedlists/selfish
 endif
 
+
 #MAKEFLAGS+=-j4
 
 MALLOC=TC
@@ -37,6 +38,11 @@ lockfree: clean-build
 estm: clean-build
 	$(MAKE) -C src/utils/estm-0.3.0
 	$(MAKE) "STM=ESTM" $(BENCHS)
+
+lib: clean-build
+	for dir in $(LFBENCHS); do \
+	$(MAKE) "STM=LOCKFREE" lib -C $$dir; \
+	done
 
 clean-build: 
 	rm -rf build
