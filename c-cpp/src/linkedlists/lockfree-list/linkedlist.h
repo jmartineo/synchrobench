@@ -7,6 +7,9 @@
  *
  */
 
+#ifndef _LINKEDLIST_H_
+#define _LINKEDLIST_H_
+
 #include <assert.h>
 #include <getopt.h>
 #include <limits.h>
@@ -63,3 +66,5 @@ node_t *new_node(val_t val, node_t *next, int transactional);
 intset_t *set_new();
 void set_delete(intset_t *set);
 int set_size(intset_t *set);
+
+#endif /* _LINKEDLIST_H_ */

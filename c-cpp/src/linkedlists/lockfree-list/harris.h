@@ -23,6 +23,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef _HARRIS_H_
+#define _HARRIS_H_
+
 
 #include "linkedlist.h"
 
@@ -40,3 +43,5 @@ node_t *harris_search(intset_t *set, val_t val, node_t **left_node);
 int harris_find(intset_t *set, val_t val);
 int harris_insert(intset_t *set, val_t val);
 int harris_delete(intset_t *set, val_t val);
+
+#endif /* _HARRIS_H_ */

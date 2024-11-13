@@ -21,6 +21,9 @@
  * GNU General Public License for more details.
  */
 
+#ifndef _HASHTABLE_H_
+#define _HASHTABLE_H_
+
 #include "../../linkedlists/lockfree-list/intset.h"
 
 #define DEFAULT_MOVE                    0
@@ -50,3 +53,5 @@ void ht_delete(ht_intset_t *set);
 int ht_size(ht_intset_t *set);
 int floor_log_2(unsigned int n);
 ht_intset_t *ht_new();
+
+#endif /* _HASHTABLE_H_ */
