@@ -329,7 +329,7 @@ void *test2(void *data)
       {NULL, 0, NULL, 0}
     };
 
-    node_t *set;		
+    // node_t *set;		
     //sl_intset_t *set;
     int i, c, size;
     val_t last = 0; 
@@ -473,19 +473,12 @@ void *test2(void *data)
     else
       srand(seed);
 		
-    node_t * newRT = (node_t*)xmalloc(sizeof(node_t));
- node_t * newLC = (node_t*)xmalloc(sizeof(node_t));
- node_t * newRC = (node_t*)xmalloc(sizeof(node_t));
- 
- /// Sentinel keys are larger than all other keys in the tree
- newRT->key = range+2;
- newLC->key = range+1;
- newRC->key = range+2;
- 
- 
- newRT->child.AO_val1 = create_child_word(newLC,UNMARK, UNFLAG);
- newRT->child.AO_val2 = create_child_word(newRC,UNMARK, UNFLAG);
-		
+    DS_TYPE root, left, right;
+
+    TreeInit(root, left, right, range);
+
+
+
 		  i = 0;
 		  data[i].first = last;
       data[i].range = range;
@@ -499,7 +492,7 @@ void *test2(void *data)
       data[i].nb_contains = 0;
       data[i].nb_found = 0;
       data[i].barrier = &barrier;
-      data[i].rootOfTree = newRT;
+      data[i].rootOfTree = &root;
       data[i].id = i;
 		  data[i].recycledNodes.reserve(RECYCLED_VECTOR_RESERVE);
       data[i].sr = new seekRecord_t;
@@ -541,7 +534,7 @@ void *test2(void *data)
       data[i].nb_contains = 0;
       data[i].nb_found = 0;
       data[i].barrier = &barrier;
-      data[i].rootOfTree = newRT;
+      data[i].rootOfTree = &root;
       data[i].id = i;
       data[i].recycledNodes.reserve(RECYCLED_VECTOR_RESERVE);
       data[i].sr = new seekRecord_t;
