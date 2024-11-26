@@ -46,8 +46,7 @@ lib:
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/ll-intset.o $(LLREP)/intset.c
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/hashtable.o hashtable.c
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/intset.o intset.c
-#	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/test.o test.c
-	$(CC) -shared -o $(SHARED_LIB) $(BUILDIR)/linkedlist.o $(BUILDIR)/harris.o $(BUILDIR)/ll-intset.o $(BUILDIR)/hashtable.o $(BUILDIR)/intset.o # $(BUILDIR)/test.o
+	$(CC) -shared -o $(SHARED_LIB) $(BUILDIR)/linkedlist.o $(BUILDIR)/harris.o $(BUILDIR)/ll-intset.o $(BUILDIR)/hashtable.o $(BUILDIR)/intset.o
 
 clean:
 	-rm -f $(BINS)

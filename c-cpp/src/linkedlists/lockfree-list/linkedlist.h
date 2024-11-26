@@ -67,4 +67,6 @@ intset_t *set_new();
 void set_delete(intset_t *set);
 int set_size(intset_t *set);
 
+void new_set(intset_t* set);
+
 #endif /* _LINKEDLIST_H_ */

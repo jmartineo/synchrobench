@@ -46,6 +46,15 @@ intset_t *set_new()
   return set;
 }
 
+void new_set(intset_t* set)
+{
+  node_t *min, *max;
+
+  max = new_node(VAL_MAX, NULL, 0);
+  min = new_node(VAL_MIN, max, 0);
+  set->head = min;
+}
+
 void set_delete(intset_t *set)
 {
   node_t *node, *next;
