@@ -52,6 +52,8 @@ typedef struct ht_intset {
 void ht_delete(ht_intset_t *set);
 int ht_size(ht_intset_t *set);
 int floor_log_2(unsigned int n);
-ht_intset_t *ht_new();
+void ht_new(ht_intset_t *set);
+
+ht_intset_t* ht_new();
 
 #endif /* _HASHTABLE_H_ */

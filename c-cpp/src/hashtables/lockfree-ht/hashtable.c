@@ -71,15 +71,10 @@ int floor_log_2(unsigned int n) {
 	return ((n == 0) ? (-1) : pos);
 }
 
-ht_intset_t *ht_new() {
-	ht_intset_t *set;
+void ht_new(ht_intset_t *set) {
 	int i;
-	
-	if ((set = (ht_intset_t *)malloc(sizeof(ht_intset_t))) == NULL) {
-		perror("malloc");
-		exit(1);
-	}  
-        if ((set->buckets = (void *)malloc((maxhtlength + 1)* sizeof(intset_t *))) == NULL) {
+
+    if ((set->buckets = (void *)malloc((maxhtlength + 1)* sizeof(intset_t *))) == NULL) {
 	perror("malloc");
 	exit(1);
 	}  
@@ -87,5 +82,4 @@ ht_intset_t *ht_new() {
 	for (i=0; i < maxhtlength; i++) {
 		set->buckets[i] = set_new();
 	}
-	return set;
 }
