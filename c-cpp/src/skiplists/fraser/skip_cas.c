@@ -292,6 +292,29 @@ set_t *set_alloc(void)
     return(l);
 }
 
+void set_init(set_t* l) {
+    node_t *n;
+    int i;
+
+    n = malloc(sizeof(*n) + (NUM_LEVELS-1)*sizeof(node_t *));
+    memset(n, 0, sizeof(*n) + (NUM_LEVELS-1)*sizeof(node_t *));
+    n->k = SENTINEL_KEYMAX;
+
+    /*
+     * Set the forward pointers of final node to other than NULL,
+     * otherwise READ_FIELD() will continually execute costly barriers.
+     * Note use of 0xfe -- that doesn't look like a marked value!
+     */
+    memset(n->next, 0xfe, NUM_LEVELS*sizeof(node_t *));
+
+    l->head.k = SENTINEL_KEYMIN;
+    l->head.level = NUM_LEVELS;
+    for ( i = 0; i < NUM_LEVELS; i++ )
+    {
+        l->head.next[i] = n;
+    }
+}
+
 
 int set_update(set_t *l, setkey_t k, setval_t v, int overwrite)
 {

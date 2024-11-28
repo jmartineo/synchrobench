@@ -76,6 +76,11 @@ void _init_set_subsystem(void);
 set_t *set_alloc(void);
 
 /*
+ * Initialise an empty set.
+ */
+void set_init(set_t *set);
+
+/*
  * Add mapping (@k -> @v) into set @s. Return previous mapped value if
  * one existed, or NULL if no previous mapping for @k existed.
  * 

@@ -41,8 +41,7 @@ lib:
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/skiplist.o skiplist.c -I.
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/background.o background.c -I.
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/intset.o intset.c -I.
-	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/test.o test.c -I.
-	$(CC) -shared -o $(SHARED_LIB) $(BUILDIR)/ptst.o $(BUILDIR)/garbagecoll.o $(BUILDIR)/nohotspot_ops.o $(BUILDIR)/skiplist.o $(BUILDIR)/background.o $(BUILDIR)/intset.o $(BUILDIR)/test.o
+	$(CC) -shared -o $(SHARED_LIB) $(BUILDIR)/ptst.o $(BUILDIR)/garbagecoll.o $(BUILDIR)/nohotspot_ops.o $(BUILDIR)/skiplist.o $(BUILDIR)/background.o $(BUILDIR)/intset.o
 
 clean:
 	-rm -f $(BINS)

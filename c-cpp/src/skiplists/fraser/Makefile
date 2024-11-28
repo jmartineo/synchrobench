@@ -44,8 +44,7 @@ lib:
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/gc.o gc.c $(INCLUDE)
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/skip_cas.o skip_cas.c $(INCLUDE)
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/intset.o intset.c $(INCLUDE)
-	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/test.o test.c $(INCLUDE)
-	$(CC) -shared -o $(SHARED_LIB) $(BUILDIR)/ptst.o $(BUILDIR)/gc.o $(BUILDIR)/skip_cas.o $(BUILDIR)/intset.o $(BUILDIR)/test.o
+	$(CC) -shared -o $(SHARED_LIB) $(BUILDIR)/ptst.o $(BUILDIR)/gc.o $(BUILDIR)/skip_cas.o $(BUILDIR)/intset.o
 
 
 cleanbuild:

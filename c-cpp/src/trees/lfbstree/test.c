@@ -329,13 +329,13 @@ void *test2(void *data)
       {NULL, 0, NULL, 0}
     };
 
-    // node_t *set;		
+    node_t *set;
     //sl_intset_t *set;
     int i, c, size;
-    val_t last = 0; 
+    val_t last = 0;
     val_t val = 0;
-    unsigned long reads, effreads, updates, effupds, aborts, aborts_locked_read, 
-      aborts_locked_write, aborts_validate_read, aborts_validate_write, 
+    unsigned long reads, effreads, updates, effupds, aborts, aborts_locked_read,
+      aborts_locked_write, aborts_validate_read, aborts_validate_write,
       aborts_validate_commit, aborts_invalid_memory, max_retries;
     thread_data_t *data;
     pthread_t *threads;
@@ -353,18 +353,18 @@ void *test2(void *data)
     int alternate = DEFAULT_ALTERNATE;
     int effective = DEFAULT_EFFECTIVE;
     sigset_t block_set;
-		
+
     while(1) {
       i = 0;
       c = getopt_long(argc, argv, "hAf:d:i:t:r:S:u:x:"
 		      , long_options, &i);
-			
+
       if(c == -1)
 	break;
-			
+
       if(c == 0 && long_options[i].flag == 0)
 	c = long_options[i].val;
-			
+
       switch(c) {
       case 0:
 	/* Flag is automatically set */
@@ -439,13 +439,13 @@ void *test2(void *data)
 	exit(1);
       }
     }
-		
+
     assert(duration >= 0);
     assert(initial >= 0);
     assert(nb_threads > 0);
     assert(range > 0 && range >= initial);
     assert(update >= 0 && update <= 100);
-		
+
     printf("Set type     : BST\n");
     printf("Duration     : %d\n", duration);
     printf("Initial size : %d\n", initial);
@@ -461,23 +461,30 @@ void *test2(void *data)
 	   (int)sizeof(long),
 	   (int)sizeof(void *),
 	   (int)sizeof(uintptr_t));
-		
+
     timeout.tv_sec = duration / 1000;
     timeout.tv_nsec = (duration % 1000) * 1000000;
-		
+
     data = (thread_data_t *)xmalloc(nb_threads * sizeof(thread_data_t));
     threads = (pthread_t *)xmalloc(nb_threads * sizeof(pthread_t));
-		
+
     if (seed == 0)
       srand((int)time(0));
     else
       srand(seed);
-		
-    DS_TYPE root, left, right;
 
-    TreeInit(root, left, right, range);
+    node_t * newRT = (node_t*)xmalloc(sizeof(node_t));
+ node_t * newLC = (node_t*)xmalloc(sizeof(node_t));
+ node_t * newRC = (node_t*)xmalloc(sizeof(node_t));
+
+ /// Sentinel keys are larger than all other keys in the tree
+ newRT->key = range+2;
+ newLC->key = range+1;
+ newRC->key = range+2;
 
 
+ newRT->child.AO_val1 = create_child_word(newLC,UNMARK, UNFLAG);
+ newRT->child.AO_val2 = create_child_word(newRC,UNMARK, UNFLAG);
 
 		  i = 0;
 		  data[i].first = last;
@@ -492,12 +499,12 @@ void *test2(void *data)
       data[i].nb_contains = 0;
       data[i].nb_found = 0;
       data[i].barrier = &barrier;
-      data[i].rootOfTree = &root;
+      data[i].rootOfTree = newRT;
       data[i].id = i;
 		  data[i].recycledNodes.reserve(RECYCLED_VECTOR_RESERVE);
       data[i].sr = new seekRecord_t;
       data[i].ssr = new seekRecord_t;
-  
+
     /* Populate set */
     printf("Adding %d entries to set\n",initial);
     i = 0;
@@ -505,17 +512,17 @@ void *test2(void *data)
       val = rand_range_re(&global_seed, range);
       if (insert(&data[0], val)) {
 	last = val;
-	
+
 	i++;
       }
     }
-    
+
     size = data[0].nb_added + 2; /// Add 2 for the 2 sentinel keys
     //size = sl_set_size(set);
     //printf("Set size     : %d\n", size);
     printf("Set size (TENTATIVE) : %d\n", initial);
     printf("Level max    : %d\n", levelmax);
-		
+
     /* Access set from all threads */
     barrier_init(&barrier, nb_threads + 1);
     pthread_attr_init(&attr);
@@ -534,7 +541,7 @@ void *test2(void *data)
       data[i].nb_contains = 0;
       data[i].nb_found = 0;
       data[i].barrier = &barrier;
-      data[i].rootOfTree = &root;
+      data[i].rootOfTree = newRT;
       data[i].id = i;
       data[i].recycledNodes.reserve(RECYCLED_VECTOR_RESERVE);
       data[i].sr = new seekRecord_t;
@@ -545,10 +552,10 @@ void *test2(void *data)
       }
     }
     pthread_attr_destroy(&attr);
-		
+
     /* Start threads */
     barrier_cross(&barrier);
-		
+
     printf("STARTING...\n");
     gettimeofday(&start, NULL);
     if (duration > 0) {
@@ -557,16 +564,16 @@ void *test2(void *data)
       sigemptyset(&block_set);
       sigsuspend(&block_set);
     }
-		
+
 #ifdef ICC
     stop = 1;
-#else	
+#else
     AO_store_full(&stop, 1);
 #endif /* ICC */
-		
+
     gettimeofday(&end, NULL);
     printf("STOPPING...\n");
-		
+
     /* Wait for thread completion */
     for (i = 0; i < nb_threads; i++) {
       if (pthread_join(threads[i], NULL) != 0) {
@@ -574,8 +581,8 @@ void *test2(void *data)
 	exit(1);
       }
     }
-		
-    duration = (end.tv_sec * 1000 + end.tv_usec / 1000) - 
+
+    duration = (end.tv_sec * 1000 + end.tv_usec / 1000) -
       (start.tv_sec * 1000 + start.tv_usec / 1000);
     reads = 0;
     effreads = 0;
@@ -591,50 +598,49 @@ void *test2(void *data)
       printf("  #contains   : %lu\n", data[i].nb_contains);
       printf("  #found      : %lu\n", data[i].nb_found);
       reads += data[i].nb_contains;
-      effreads += data[i].nb_contains + 
-	(data[i].nb_add - data[i].nb_added) + 
-	(data[i].nb_remove - data[i].nb_removed); 
+      effreads += data[i].nb_contains +
+	(data[i].nb_add - data[i].nb_added) +
+	(data[i].nb_remove - data[i].nb_removed);
       updates += (data[i].nb_add + data[i].nb_remove);
-      effupds += data[i].nb_removed + data[i].nb_added; 
+      effupds += data[i].nb_removed + data[i].nb_added;
       size += data[i].nb_added - data[i].nb_removed;
-      
+
     }
-    
+
     /// Sanity check
     in_order_visit((newRT));
-    
+
     //printf("Set size      : %d (expected: %d)\n", sl_set_size(set), size);
     printf("Duration      : %d (ms)\n", duration);
-    printf("#txs          : %lu (%f / s)\n", reads + updates, 
+    printf("#txs          : %lu (%f / s)\n", reads + updates,
 	   (reads + updates) * 1000.0 / duration);
-		
+
     printf("#read txs     : ");
     if (effective) {
       printf("%lu (%f / s)\n", effreads, effreads * 1000.0 / duration);
-      printf("  #contains   : %lu (%f / s)\n", reads, reads * 1000.0 / 
+      printf("  #contains   : %lu (%f / s)\n", reads, reads * 1000.0 /
 	     duration);
     } else printf("%lu (%f / s)\n", reads, reads * 1000.0 / duration);
-		
+
     printf("#eff. upd rate: %f \n", 100.0 * effupds / (effupds + effreads));
-		
+
     printf("#update txs   : ");
     if (effective) {
       printf("%lu (%f / s)\n", effupds, effupds * 1000.0 / duration);
-      printf("  #upd trials : %lu (%f / s)\n", updates, updates * 1000.0 / 
+      printf("  #upd trials : %lu (%f / s)\n", updates, updates * 1000.0 /
 	     duration);
     } else printf("%lu (%f / s)\n", updates, updates * 1000.0 / duration);
-		
-		
+
+
     /* Delete set */
     //sl_set_delete(set);
-		
+
 #ifndef TLS
     pthread_key_delete(rng_seed_key);
 #endif /* ! TLS */
-		
+
     free(threads);
     free(data);
-		
+
     return 0;
   }
-
