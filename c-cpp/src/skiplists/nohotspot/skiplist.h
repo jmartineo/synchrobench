@@ -45,7 +45,7 @@ struct sl_inode {
 typedef VOLATILE struct sl_set set_t;
 struct sl_set {
         inode_t *top;
-        node_t  *head;
+        node_t  head;
         int raises;
 };
 

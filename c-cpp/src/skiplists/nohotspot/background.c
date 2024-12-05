@@ -145,11 +145,11 @@ static void* bg_loop(void *args)
                 /* traverse the node level and do physical deletes */
                 bg_trav_nodes(ptst);
 
-                assert(set->head->level < MAX_LEVELS);
+                assert(set->head.level < MAX_LEVELS);
 
                 /* get the first index node at each level */
                 inode = set->top;
-                for (i = set->head->level - 1; i >= 0; i--) {
+                for (i = set->head.level - 1; i >= 0; i--) {
                         inodes[i] = inode;
                         assert(NULL != inodes[i]);
                         inode = inode->down;
@@ -159,11 +159,11 @@ static void* bg_loop(void *args)
                 /* raise bottom level nodes */
                 raised = bg_raise_nlevel(inodes[0], ptst);
 
-                if (raised && (1 == set->head->level)) {
+                if (raised && (1 == set->head.level)) {
                         /* add a new index level */
-                        inew = inode_new(NULL, set->top, set->head, ptst);
+                        inew = inode_new(NULL, set->top, &set->head, ptst);
                         set->top = inew;
-                        ++set->head->level;
+                        ++set->head.level;
                         assert(NULL == inodes[1]);
                         inodes[1] = set->top;
 
@@ -173,7 +173,7 @@ static void* bg_loop(void *args)
                 }
 
                 /* raise the index level nodes */
-                for (i = 0; i < (set->head->level - 1); i++) {
+                for (i = 0; i < (set->head.level - 1); i++) {
                         assert(i < MAX_LEVELS-1);
                         raised = bg_raise_ilevel(inodes[i],/* level raised */
                                                  inodes[i + 1],/* level above */
@@ -183,9 +183,9 @@ static void* bg_loop(void *args)
 
                 if (raised) {
                         /* add a new index level */
-                        inew = inode_new(NULL, set->top, set->head, ptst);
+                        inew = inode_new(NULL, set->top, &set->head, ptst);
                         set->top = inew;
-                        ++set->head->level;
+                        ++set->head.level;
 
                         #ifdef BG_STATS
                         ++bg_stats.raises;
@@ -225,9 +225,9 @@ static void bg_trav_nodes(ptst_t *ptst)
 {
         node_t *prev, *node;
 
-        assert(NULL != set && NULL != set->head);
+        assert(NULL != set && NULL != set->head.next);
 
-        prev = set->head;
+        prev = &set->head;
         node = prev->next;
         while (NULL != node) {
                 bg_remove(prev, node, ptst);
@@ -257,8 +257,8 @@ static int bg_raise_nlevel(inode_t *inode, ptst_t *ptst)
 
         assert(NULL != inode);
 
-        prev = set->head;
-        node = set->head->next;
+        prev = &set->head;
+        node = set->head.next;
 
         if (NULL == node)
                 return 0;

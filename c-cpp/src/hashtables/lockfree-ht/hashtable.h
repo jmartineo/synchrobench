@@ -46,7 +46,6 @@ extern pthread_key_t rng_seed_key;
 #endif /* ! TLS */
 
 typedef struct ht_intset {
-//  intset_t **buckets;
   intset_t buckets[MAXHTLENGTH+1];
 } ht_intset_t;
 

@@ -130,18 +130,17 @@ set_t* set_new(int start)
                 exit(1);
         }
 
-        set->head = malloc(sizeof(node_t));
-        set->head->key    = 0;
-        set->head->val    = NULL;
-        set->head->prev   = NULL;
-        set->head->next   = NULL;
-        set->head->level  = 1;
-        set->head->marker = 0;
+        set->head.key    = 0;
+        set->head.val    = NULL;
+        set->head.prev   = NULL;
+        set->head.next   = NULL;
+        set->head.level  = 1;
+        set->head.marker = 0;
 
         set->top = malloc(sizeof(inode_t));
         set->top->right = NULL;
         set->top->down  = NULL;
-        set->top->node  = set->head;
+        set->top->node  = &set->head;
 
         set->raises = 0;
 
@@ -154,18 +153,16 @@ set_t* set_new(int start)
 
 void new_set(set_t *set)
 {
-        set->head = malloc(sizeof(node_t));
-        set->head->key    = 0;
-        set->head->val    = NULL;
-        set->head->prev   = NULL;
-        set->head->next   = NULL;
-        set->head->level  = 1;
-        set->head->marker = 0;
+        set->head.key    = 0;
+        set->head.val    = NULL;
+        set->head.prev   = NULL;
+        set->head.next   = NULL;
+        set->head.level  = 1;
+        set->head.marker = 0;
 
-        set->top = malloc(sizeof(inode_t));
         set->top->right = NULL;
         set->top->down  = NULL;
-        set->top->node  = set->head;
+        set->top->node  = &set->head;
 
         set->raises = 0;
 
@@ -197,7 +194,7 @@ void set_delete(set_t *set)
  */
 void set_print(set_t *set, int flag)
 {
-        node_t  *node   = set->head;
+        node_t  node   = set->head;
         inode_t *ihead  = set->top;
         inode_t *itemp  = set->top;
 
@@ -212,12 +209,12 @@ void set_print(set_t *set, int flag)
                 itemp = ihead;
         }
 
-        while (NULL != node) {
-                if (flag && (NULL != node->val && node->val != node))
-                        printf("%lu ", node->key);
+        while (NULL != node.next) {
+                if (flag && (NULL != node.val && node.val != &node))
+                        printf("%lu ", node.key);
                 else if (!flag)
-                        printf("%lu ", node->key);
-                node = node->next;
+                        printf("%lu ", node.key);
+                node = *node.next;
         }
         printf("\n");
 }
@@ -231,16 +228,16 @@ void set_print(set_t *set, int flag)
  */
 int set_size(set_t *set, int flag)
 {
-        struct sl_node *node = set->head;
+        struct sl_node node = set->head;
         int size = 0;
 
-        node = node->next;
-        while (NULL != node) {
-                if (flag && (NULL != node->val && node != node->val))
+        node = *node.next;
+        while (NULL != node.next) {
+                if (flag && (NULL != node.val && node.val != &node))
                         ++size;
                 else if (!flag)
                         ++size;
-                node = node->next;
+                node = *node.next;
         }
 
         return size;
