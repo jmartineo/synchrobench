@@ -28,9 +28,9 @@ int ht_contains(ht_intset_t *set, int val, int transactional) {
 	
 	addr = val % maxhtlength;
 	if (transactional == 5)
-	  return set_contains(set->buckets[addr], val, 4);
+	  return set_contains(&set->buckets[addr], val, 4);
 	else
-	  return set_contains(set->buckets[addr], val, transactional);
+	  return set_contains(&set->buckets[addr], val, transactional);
 }
 
 int ht_add(ht_intset_t *set, int val, int transactional) {
@@ -38,9 +38,9 @@ int ht_add(ht_intset_t *set, int val, int transactional) {
 	
 	addr = val % maxhtlength;
 	if (transactional == 5)
-		return set_add(set->buckets[addr], val, 4);
+		return set_add(&set->buckets[addr], val, 4);
 	else 
-		return set_add(set->buckets[addr], val, transactional);
+		return set_add(&set->buckets[addr], val, transactional);
 }
 
 int ht_remove(ht_intset_t *set, int val, int transactional) {
@@ -48,9 +48,9 @@ int ht_remove(ht_intset_t *set, int val, int transactional) {
     
 	addr = val % maxhtlength;
 	if (transactional == 5)
-		return set_remove(set->buckets[addr], val, 4);
+		return set_remove(&set->buckets[addr], val, 4);
 	else
-		return set_remove(set->buckets[addr], val, transactional);
+		return set_remove(&set->buckets[addr], val, transactional);
 }
 
 /* 

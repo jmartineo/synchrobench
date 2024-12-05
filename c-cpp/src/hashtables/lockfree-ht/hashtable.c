@@ -31,13 +31,13 @@ void ht_delete(ht_intset_t *set) {
   int i;
   
   for (i=0; i < maxhtlength; i++) {
-    node = set->buckets[i]->head;
+    node = set->buckets[i].head;
     while (node != NULL) {
       next = node->next;
       free(node);
       node = next;
     }
-    free(set->buckets[i]);
+    free(&set->buckets[i]);
   }
   free(set->buckets);
   free(set);
@@ -49,7 +49,7 @@ int ht_size(ht_intset_t *set) {
 	int i;
 	
 	for (i=0; i < maxhtlength; i++) {
-		node = set->buckets[i]->head->next;
+		node = set->buckets[i].head->next;
 		while (node->next) {
 			size++;
 			node = node->next;
@@ -74,31 +74,26 @@ int floor_log_2(unsigned int n) {
 void new_ht(ht_intset_t *set) {
 	int i;
 
-    if ((set->buckets = (void *)malloc((maxhtlength + 1)* sizeof(intset_t *))) == NULL) {
-	perror("malloc");
-	exit(1);
-	}  
-
 	for (i=0; i < maxhtlength; i++) {
-		set->buckets[i] = set_new();
+		new_set(&set->buckets[i]);
 	}
 }
 
-ht_intset_t* ht_new() {
-	ht_intset_t *set;
-	int i;
-
-	if ((set = (ht_intset_t *)malloc(sizeof(ht_intset_t))) == NULL) {
-		perror("malloc");
-		exit(1);
-	}
-	if ((set->buckets = (intset_t **)malloc((maxhtlength + 1)* sizeof(intset_t *))) == NULL) {
-		perror("malloc");
-		exit(1);
-	}
-
-	for (i=0; i < maxhtlength; i++) {
-		set->buckets[i] = set_new();
-	}
-	return set;
-}
+//ht_intset_t* ht_new() {
+//	ht_intset_t *set;
+//	int i;
+//
+//	if ((set = (ht_intset_t *)malloc(sizeof(ht_intset_t))) == NULL) {
+//		perror("malloc");
+//		exit(1);
+//	}
+//	if ((set->buckets = (intset_t **)malloc((maxhtlength + 1)* sizeof(intset_t *))) == NULL) {
+//		perror("malloc");
+//		exit(1);
+//	}
+//
+//	for (i=0; i < maxhtlength; i++) {
+//		set->buckets[i] = set_new();
+//	}
+//	return set;
+//}
