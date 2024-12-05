@@ -64,4 +64,6 @@ int set_size(set_t *set, int flag);
 
 void set_subsystem_init(void);
 
+void new_set(set_t *set);
+
 #endif /* SKIPLIST_H_ */

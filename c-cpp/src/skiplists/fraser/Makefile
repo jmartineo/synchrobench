@@ -37,14 +37,16 @@ TARGETS    += skip_stm_fraser skip_stm_herlihy skip_stm_lock
 all: main cleanbuild
 
 main: intset.o ptst.h set.h skip_cas.o gc.o ptst.o portable_defns.h sparc_defns.h intel_defns.h intset.h
+	@echo $(ARCH)
 	$(CC) $(CFLAGS) intset.o gc.o ptst.o skip_cas.o test.c -o $(BINS) $(LDFLAGS)
 
-lib:
+lib: portable_defns.h sparc_defns.h intel_defns.h intset.h
+	@echo $(ARCH)
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/ptst.o ptst.c $(INCLUDE)
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/gc.o gc.c $(INCLUDE)
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/skip_cas.o skip_cas.c $(INCLUDE)
 	$(CC) $(CFLAGS) -fPIC -c -o $(BUILDIR)/intset.o intset.c $(INCLUDE)
-	$(CC) -shared -o $(SHARED_LIB) $(BUILDIR)/ptst.o $(BUILDIR)/gc.o $(BUILDIR)/skip_cas.o $(BUILDIR)/intset.o
+	$(CC) -shared -o $(SHARED_LIB) $(BUILDIR)/intset.o $(BUILDIR)/ptst.o $(BUILDIR)/skip_cas.o $(BUILDIR)/gc.o
 
 
 cleanbuild:

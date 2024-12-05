@@ -152,6 +152,26 @@ set_t* set_new(int start)
         return set;
 }
 
+void new_set(set_t *set)
+{
+        set->head = malloc(sizeof(node_t));
+        set->head->key    = 0;
+        set->head->val    = NULL;
+        set->head->prev   = NULL;
+        set->head->next   = NULL;
+        set->head->level  = 1;
+        set->head->marker = 0;
+
+        set->top = malloc(sizeof(inode_t));
+        set->top->right = NULL;
+        set->top->down  = NULL;
+        set->top->node  = set->head;
+
+        set->raises = 0;
+
+        bg_init(set);
+}
+
 /**
  * set_delete - delete the set
  * @set: the set to delete
