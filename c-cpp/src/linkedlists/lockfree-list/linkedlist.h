@@ -32,7 +32,7 @@
 
 #define ATOMIC_CAS_MB(a, e, v)          (AO_compare_and_swap_full((volatile AO_t *)(a), (AO_t)(e), (AO_t)(v)))
 
-#define TRANSACTIONAL                   d->unit_tx
+#define TRANSACTIONAL                   5
 
 typedef intptr_t val_t;
 #define VAL_MIN                         INT_MIN
