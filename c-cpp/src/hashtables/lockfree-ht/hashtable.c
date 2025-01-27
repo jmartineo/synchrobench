@@ -26,6 +26,8 @@
 
 #include "hashtable.h"
 
+unsigned int maxhtlength = 256;
+
 void ht_delete(ht_intset_t *set) {
   node_t *node, *next;
   int i;

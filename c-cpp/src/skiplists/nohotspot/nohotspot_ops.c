@@ -211,7 +211,7 @@ int sl_do_operation(set_t *set, sl_optype_t optype, sl_key_t key, val_t val)
 #endif
 
         /* find an entry-point to the node-level */
-        item = set->top;
+        item = &set->top;
         while (1) {
                 next_item = item->right;
                 if (NULL == next_item || next_item->node->key > key) {

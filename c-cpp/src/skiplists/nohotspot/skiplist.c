@@ -95,6 +95,20 @@ inode_t* inode_new(inode_t *right, inode_t *down, node_t *node, ptst_t *ptst)
 }
 
 /**
+ * inode_new - create a new index node
+ * @right: the right inode pointer for the new inode
+ * @down: the down inode pointer for the new inode
+ * @node: the node pointer for the new inode
+ * @ptst: per-thread state
+ */
+void create_inode_new(inode_t *new, inode_t *right, inode_t *down, node_t *node, ptst_t *ptst)
+{
+        new->right = right;
+        new->down = down;
+        new->node = node;
+}
+
+/**
  * node_delete - delete a bottom-level node
  * @node: the node to delete
  */
@@ -120,36 +134,36 @@ void inode_delete(inode_t *inode, ptst_t *ptst)
  * Note: A background thread to update the index levels of the
  * skip list is created and kick-started as part of this routine.
  */
-set_t* set_new(int start)
-{
-        set_t *set;
-
-        set = malloc(sizeof(set_t));
-        if (!set) {
-                perror("Failed to malloc a set\n");
-                exit(1);
-        }
-
-        set->head.key    = 0;
-        set->head.val    = NULL;
-        set->head.prev   = NULL;
-        set->head.next   = NULL;
-        set->head.level  = 1;
-        set->head.marker = 0;
-
-        set->top = malloc(sizeof(inode_t));
-        set->top->right = NULL;
-        set->top->down  = NULL;
-        set->top->node  = &set->head;
-
-        set->raises = 0;
-
-        bg_init(set);
-        if (start)
-                bg_start(0);
-
-        return set;
-}
+//set_t* set_new(int start)
+//{
+//        set_t *set;
+//
+//        set = malloc(sizeof(set_t));
+//        if (!set) {
+//                perror("Failed to malloc a set\n");
+//                exit(1);
+//        }
+//
+//        set->head.key    = 0;
+//        set->head.val    = NULL;
+//        set->head.prev   = NULL;
+//        set->head.next   = NULL;
+//        set->head.level  = 1;
+//        set->head.marker = 0;
+//
+//        set->top = malloc(sizeof(inode_t));
+//        set->top->right = NULL;
+//        set->top->down  = NULL;
+//        set->top->node  = &set->head;
+//
+//        set->raises = 0;
+//
+//        bg_init(set);
+//        if (start)
+//                bg_start(0);
+//
+//        return set;
+//}
 
 void new_set(set_t *set)
 {
@@ -160,13 +174,15 @@ void new_set(set_t *set)
         set->head.level  = 1;
         set->head.marker = 0;
 
-        set->top->right = NULL;
-        set->top->down  = NULL;
-        set->top->node  = &set->head;
+        set->top.right = NULL;
+        set->top.down  = NULL;
+        set->top.node  = &set->head;
 
         set->raises = 0;
 
         bg_init(set);
+
+        bg_start(0);
 }
 
 /**
@@ -192,32 +208,32 @@ void set_delete(set_t *set)
  * @set: the skip list set to print
  * @flag: if non-zero include logically deleted nodes in the count
  */
-void set_print(set_t *set, int flag)
-{
-        node_t  node   = set->head;
-        inode_t *ihead  = set->top;
-        inode_t *itemp  = set->top;
-
-        /* print the index items */
-        while (NULL != ihead) {
-                while (NULL != itemp) {
-                        printf("%lu ", itemp->node->key);
-                        itemp = itemp->right;
-                }
-                printf("\n");
-                ihead = ihead->down;
-                itemp = ihead;
-        }
-
-        while (NULL != node.next) {
-                if (flag && (NULL != node.val && node.val != &node))
-                        printf("%lu ", node.key);
-                else if (!flag)
-                        printf("%lu ", node.key);
-                node = *node.next;
-        }
-        printf("\n");
-}
+//void set_print(set_t *set, int flag)
+//{
+//        node_t  node   = set->head;
+//        inode_t *ihead  = set->top;
+//        inode_t *itemp  = set->top;
+//
+//        /* print the index items */
+//        while (NULL != ihead) {
+//                while (NULL != itemp) {
+//                        printf("%lu ", itemp->node->key);
+//                        itemp = itemp->right;
+//                }
+//                printf("\n");
+//                ihead = ihead->down;
+//                itemp = ihead;
+//        }
+//
+//        while (NULL != node.next) {
+//                if (flag && (NULL != node.val && node.val != &node))
+//                        printf("%lu ", node.key);
+//                else if (!flag)
+//                        printf("%lu ", node.key);
+//                node = *node.next;
+//        }
+//        printf("\n");
+//}
 
 /**
  * set_size - print the size of the set

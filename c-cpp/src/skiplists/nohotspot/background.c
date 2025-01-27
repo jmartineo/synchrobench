@@ -148,7 +148,7 @@ static void* bg_loop(void *args)
                 assert(set->head.level < MAX_LEVELS);
 
                 /* get the first index node at each level */
-                inode = set->top;
+                inode = &set->top;
                 for (i = set->head.level - 1; i >= 0; i--) {
                         inodes[i] = inode;
                         assert(NULL != inodes[i]);
@@ -161,11 +161,11 @@ static void* bg_loop(void *args)
 
                 if (raised && (1 == set->head.level)) {
                         /* add a new index level */
-                        inew = inode_new(NULL, set->top, &set->head, ptst);
-                        set->top = inew;
+                        inew = inode_new(NULL, &set->top, &set->head, ptst);
+                        set->top = *inew;
                         ++set->head.level;
                         assert(NULL == inodes[1]);
-                        inodes[1] = set->top;
+                        inodes[1] = &set->top;
 
                         #ifdef BG_STATS
                         ++bg_stats.raises;
@@ -183,8 +183,8 @@ static void* bg_loop(void *args)
 
                 if (raised) {
                         /* add a new index level */
-                        inew = inode_new(NULL, set->top, &set->head, ptst);
-                        set->top = inew;
+                        inew = inode_new(NULL, &set->top, &set->head, ptst);
+                        set->top = *inew;
                         ++set->head.level;
 
                         #ifdef BG_STATS
