@@ -123,15 +123,35 @@ int harris_find(intset_t *set, val_t val) {
  */
 int harris_insert(intset_t *set, val_t val) {
 	node_t *newnode, *right_node, *left_node;
+	node_t *old_head;
 	left_node = set->head;
-	
+
+	/* Allocate once outside the retry loop; reuse across CAS failures */
+	do {
+		old_head = set->pool;
+		if (old_head == NULL) break;
+	} while (!ATOMIC_CAS_MB(&set->pool, old_head, old_head->next));
+	if (old_head != NULL) {
+		newnode = old_head;
+		newnode->val = val;
+		newnode->next = NULL;
+	} else {
+		newnode = new_node(val, NULL, 0);
+	}
+
 	do {
 		right_node = harris_search(set, val, &left_node);
-		if (right_node->val == val)
+		if (right_node->val == val) {
+			/* Return unused node to pool */
+			do {
+				old_head = set->pool;
+				newnode->next = old_head;
+			} while (!ATOMIC_CAS_MB(&set->pool, old_head, newnode));
 			return 0;
-		newnode = new_node(val, right_node, 0);
+		}
+		newnode->next = right_node;
 		/* mem-bar between node creation and insertion */
-		AO_nop_full(); 
+		AO_nop_full();
 		if (ATOMIC_CAS_MB(&left_node->next, right_node, newnode))
 			return 1;
 	} while(1);
