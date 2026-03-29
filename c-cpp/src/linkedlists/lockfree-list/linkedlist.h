@@ -45,7 +45,6 @@ typedef struct node {
 
 typedef struct intset {
 	node_t *head;
-	node_t * volatile pool; /* pre-allocated node pool, eliminates malloc per insert */
 } intset_t;
 
 node_t *new_node(val_t val, node_t *next, int transactional);
@@ -54,8 +53,5 @@ void set_delete(intset_t *set);
 int set_size(intset_t *set);
 
 void new_set(intset_t* set);
-
-/* Pre-populate set->pool to eliminate per-insert malloc from the timed section */
-void set_prefill_pool(intset_t *set, int capacity);
 
 #endif /* _LINKEDLIST_H_ */

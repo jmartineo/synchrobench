@@ -43,7 +43,6 @@ intset_t *set_new()
   max = new_node(VAL_MAX, NULL, 0);
   min = new_node(VAL_MIN, max, 0);
   set->head = min;
-  set->pool = NULL;
 
   return set;
 }
@@ -55,17 +54,6 @@ void new_set(intset_t* set)
   max = new_node(VAL_MAX, NULL, 0);
   min = new_node(VAL_MIN, max, 0);
   set->head = min;
-  set->pool = NULL;
-}
-
-/* Pre-populate set->pool so the timed section uses pool alloc instead of malloc */
-void set_prefill_pool(intset_t *set, int capacity)
-{
-  int i;
-  for (i = 0; i < capacity; i++) {
-    node_t *n = new_node(0, set->pool, 0);
-    set->pool = n;
-  }
 }
 
 void set_delete(intset_t *set)
